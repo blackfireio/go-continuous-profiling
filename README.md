@@ -1,11 +1,10 @@
-Blackfire Continuous Profiler for Go
-====================================
+# Blackfire Continuous Profiler for Go
 
 Blackfire Continuous Profiler collects and uploads profiles to the Blackfire Agent. It uses
-Go's standart library profilers under the hood.
+Go's standard library profilers under the hood.
 
 
-# API
+## API
 
 The probe has two functions:
 
