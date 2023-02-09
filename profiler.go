@@ -34,14 +34,14 @@ var (
 	activeProfiler    *profiler
 	uploadChannelSize = 5
 	maxUploadRetries  = 2
-	errOldAgent       = errors.New("continuous profiling feature requires Blackfire Agent >= 2.13.0")
+	errOldAgent       = errors.New("Continuous profiling feature requires Blackfire Agent >= 2.13.0")
 )
 
 func parseNetworkAddressString(agentSocket string) (network string, address string, err error) {
 	re := regexp.MustCompile(`^([^:]+)://(.*)`)
 	matches := re.FindAllStringSubmatch(agentSocket, -1)
 	if matches == nil {
-		err = fmt.Errorf("could not parse agent socket value: [%v]", agentSocket)
+		err = fmt.Errorf("Could not parse agent socket value: [%v]", agentSocket)
 		return
 	}
 	network = matches[0][1]
@@ -61,7 +61,7 @@ func newProfiler(opts ...Option) (*profiler, error) {
 	agentLessMode := false
 	n, a, err := parseNetworkAddressString(cfg.agentSocket)
 	if err != nil {
-		return nil, fmt.Errorf("invalid agent socket. (%s)", cfg.agentSocket)
+		return nil, fmt.Errorf("Invalid agent socket. (%s)", cfg.agentSocket)
 	}
 	if n == "unix" {
 		cfg.agentEndpoint = fmt.Sprintf("http://unix/%s", agentConProfUri)
@@ -71,7 +71,7 @@ func newProfiler(opts ...Option) (*profiler, error) {
 		agentLessMode = true
 		cfg.agentEndpoint = cfg.agentSocket + "/" + agentConProfUri
 	} else {
-		return nil, fmt.Errorf("invalid agent socket. (%s)", cfg.agentSocket)
+		return nil, fmt.Errorf("Invalid agent socket. (%s)", cfg.agentSocket)
 	}
 
 	if cfg.httpClient == nil {
@@ -140,7 +140,7 @@ func (p *profiler) run() {
 				defer wg.Done()
 				data, err := collectFns[t](p)
 				if err != nil {
-					log.Debug().Msgf("error getting %s profile. %v", t.String(), err)
+					log.Debug().Msgf("Error getting %s profile. %v", t.String(), err)
 					return
 				}
 				m.Lock()
@@ -153,7 +153,7 @@ func (p *profiler) run() {
 
 		select {
 		case <-p.exitCh:
-			log.Debug().Msg("profiler interrupted!")
+			log.Debug().Msg("Profiler interrupted!")
 			return
 		case <-ticker.C:
 			continue
@@ -178,7 +178,7 @@ func (p *profiler) doRequest(contentType string, body io.Reader) error {
 		cancel()
 	}()
 
-	log.Debug().Msgf("uploading profile to %s", p.cfg.agentEndpoint)
+	log.Debug().Msgf("Uploading profile to %s", p.cfg.agentEndpoint)
 
 	req, err := http.NewRequestWithContext(ctx, "POST", p.cfg.agentEndpoint, body)
 	if err != nil {
@@ -216,9 +216,9 @@ func (p *profiler) upload() {
 			return
 		case bat := <-p.uploadCh:
 			if err := p.doUpload(bat); err != nil {
-				log.Error().Msgf("failed to upload profile: %v", err)
+				log.Error().Msgf("Failed to upload profile: %v", err)
 			} else {
-				log.Debug().Msgf("upload profile succeeded.")
+				log.Debug().Msgf("Upload profile succeeded.")
 			}
 		}
 	}
@@ -261,13 +261,13 @@ func (p *profiler) doUpload(b profileBatch) error {
 		err = p.doRequest(mw.FormDataContentType(), &body)
 		if rerr, ok := err.(*retriableError); ok {
 			wait := time.Duration(rand.Int63n(p.cfg.period.Nanoseconds()))
-			log.Error().Msgf("profile upload failed: %v. trying again in %s...", rerr, wait)
+			log.Error().Msgf("Profile upload failed: %v. trying again in %s...", rerr, wait)
 			p.interruptibleSleep(wait * time.Nanosecond)
 			continue
 		}
 		return err
 	}
-	return fmt.Errorf("failed after %d retries, last error was: %v", maxUploadRetries, err)
+	return fmt.Errorf("Failed after %d retries, last error was: %v", maxUploadRetries, err)
 }
 
 func (p *profiler) stop() {
@@ -282,7 +282,7 @@ func Start(opts ...Option) error {
 	defer mu.Unlock()
 
 	if activeProfiler != nil {
-		return fmt.Errorf("profiler is already running")
+		return fmt.Errorf("Profiler is already running")
 	}
 	p, err := newProfiler(opts...)
 	if err != nil {
