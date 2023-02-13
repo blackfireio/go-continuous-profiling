@@ -41,12 +41,12 @@ func parseConProfReq(t *testing.T, r *http.Request) (map[string]string, []*pprof
 			break
 		}
 		if part == nil {
-			t.Fatal("invalid part")
+			t.Fatal("Invalid part")
 		}
 
 		body, err := io.ReadAll(part)
 		if err != nil {
-			t.Fatal("invalid part body")
+			t.Fatal("Invalid part body")
 		}
 
 		if isLabel(part) {
@@ -107,7 +107,7 @@ func TestStartStop(t *testing.T) {
 		defer Stop()
 
 		err := Start()
-		assert.True(t, strings.Contains(err.Error(), "profiler is already running"))
+		assert.True(t, strings.Contains(err.Error(), "Profiler is already running"))
 
 		time.Sleep(200 * time.Millisecond)
 	})
@@ -130,7 +130,7 @@ func TestStartStop(t *testing.T) {
 
 		time.Sleep(500 * time.Millisecond)
 
-		assert.True(t, logRecorder.Contains([]string{"failed to upload profile"}))
+		assert.True(t, logRecorder.Contains([]string{"Failed to upload profile"}))
 	})
 
 	t.Run("uploadtimeout", func(t *testing.T) {
@@ -155,7 +155,7 @@ func TestStartStop(t *testing.T) {
 		defer Stop()
 
 		time.Sleep(300 * time.Millisecond)
-		assert.True(t, logRecorder.Contains([]string{"upload failed: context deadline exceeded.", "upload profile succeeded"}))
+		assert.True(t, logRecorder.Contains([]string{"Upload failed: context deadline exceeded.", "upload profile succeeded"}))
 	})
 
 	t.Run("stopduringupload", func(t *testing.T) {
@@ -174,8 +174,8 @@ func TestStartStop(t *testing.T) {
 		time.Sleep(150 * time.Millisecond) // wait a bit
 		Stop()
 
-		assert.True(t, logRecorder.Contains([]string{"profile started for", "profiler interrupted!"}))
-		assert.False(t, logRecorder.Contains([]string{"upload profile succeeded"}))
+		assert.True(t, logRecorder.Contains([]string{"Profile started for", "profiler interrupted!"}))
+		assert.False(t, logRecorder.Contains([]string{"Upload profile succeeded"}))
 	})
 
 	t.Run("stopduringprofiling", func(t *testing.T) {
@@ -192,7 +192,7 @@ func TestStartStop(t *testing.T) {
 		time.Sleep(200 * time.Millisecond) // wait a bit
 		Stop()
 
-		assert.True(t, logRecorder.Contains([]string{"profile started", "profile ended", "profiler interrupted!"}))
+		assert.True(t, logRecorder.Contains([]string{"Profile started", "Profile ended", "Profiler interrupted!"}))
 	})
 
 	t.Run("uploadqueuefull", func(t *testing.T) {
@@ -213,7 +213,7 @@ func TestStartStop(t *testing.T) {
 		time.Sleep(2000 * time.Millisecond) // wait a bit
 		Stop()
 
-		assert.True(t, logRecorder.Contains([]string{"profile started", "Upload queue is full.", "profiler interrupted!"}))
+		assert.True(t, logRecorder.Contains([]string{"Profile started", "Upload queue is full.", "Profiler interrupted!"}))
 	})
 
 	t.Run("config", func(t *testing.T) {

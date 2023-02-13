@@ -110,7 +110,7 @@ func newLoggerFromEnv() (zerolog.Logger, error) {
 	if v := os.Getenv("BLACKFIRE_LOG_LEVEL"); v != "" {
 		d, err := strconv.Atoi(v)
 		if err != nil {
-			rerr = fmt.Errorf("invalid log level value.(%s)", v)
+			rerr = fmt.Errorf("Invalid log level value.(%s)", v)
 		} else {
 			level = logLevel(d)
 		}
@@ -119,7 +119,7 @@ func newLoggerFromEnv() (zerolog.Logger, error) {
 	if v := os.Getenv("BLACKFIRE_LOG_FILE"); v != "" {
 		w, err := os.OpenFile(v, os.O_RDWR|os.O_CREATE, 0664)
 		if err != nil {
-			rerr = fmt.Errorf("could not open log file at %s: %v", v, err)
+			rerr = fmt.Errorf("Could not open log file at %s: %v", v, err)
 		} else {
 			out = w
 		}
@@ -159,7 +159,7 @@ func initDefaultConfig() (*config, error) {
 	if v := os.Getenv("BLACKFIRE_CONPROF_CPU_DURATION"); v != "" {
 		d, err := strconv.Atoi(v)
 		if err != nil {
-			log.Error().Msgf("invalid CPU duration value.(%d)", d)
+			log.Error().Msgf("Invalid CPU duration value.(%d)", d)
 		} else {
 			c.cpuDuration = time.Duration(d) * time.Second
 		}
@@ -167,7 +167,7 @@ func initDefaultConfig() (*config, error) {
 	if v := os.Getenv("BLACKFIRE_CONPROF_PERIOD"); v != "" {
 		d, err := strconv.Atoi(v)
 		if err != nil {
-			log.Error().Msgf("invalid period value.(%d)", d)
+			log.Error().Msgf("Invalid period value.(%d)", d)
 		} else {
 			c.period = time.Duration(d) * time.Second
 		}
@@ -175,7 +175,7 @@ func initDefaultConfig() (*config, error) {
 	if v := os.Getenv("BLACKFIRE_CONPROF_CPU_PROFILERATE"); v != "" {
 		d, err := strconv.Atoi(v)
 		if err != nil {
-			log.Error().Msgf("invalid CPU profile rate value.(%d)", d)
+			log.Error().Msgf("Invalid CPU profile rate value.(%d)", d)
 		} else {
 			c.cpuProfileRate = d
 		}
@@ -183,7 +183,7 @@ func initDefaultConfig() (*config, error) {
 	if v := os.Getenv("BLACKFIRE_CONPROF_UPLOAD_TIMEOUT"); v != "" {
 		d, err := strconv.Atoi(v)
 		if err != nil {
-			log.Error().Msgf("invalid upload timeout value.(%d)", d)
+			log.Error().Msgf("Invalid upload timeout value.(%d)", d)
 		} else {
 			c.uploadTimeout = time.Duration(d) * time.Second
 		}
