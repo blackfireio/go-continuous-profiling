@@ -3,9 +3,9 @@ module github.com/blackfireio/go-conprof
 go 1.19
 
 require (
-	github.com/google/pprof v0.0.0-20230207041349-798e818bf904
+	github.com/google/pprof v0.0.0-20230309165930-d61513b1440d
 	github.com/rs/zerolog v1.29.0
-	github.com/stretchr/testify v1.8.1
+	github.com/stretchr/testify v1.8.2
 )
 
 require (
