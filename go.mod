@@ -1,6 +1,6 @@
 module github.com/blackfireio/go-conprof
 
-go 1.19
+go 1.20
 
 require (
 	github.com/google/pprof v0.0.0-20230309165930-d61513b1440d
