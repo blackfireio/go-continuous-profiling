@@ -2,7 +2,7 @@
 
 Blackfire Continuous Profiler continuously collects and uploads profiling data to the Blackfire servers.
 
-Once the profiler is enabled, it collects the relevant profiling information in configurable intervals and uploads this information periodically to the Blackfire Agent. Blackfire Agent then forwards this information to the backend.  It does all these in separate goroutines asynchronously. The heavy lifting of the profiler collection is all done by Go standard library profilers: e.g: See https://pkg.go.dev/runtime/pprof for more details
+Once the profiler is enabled, it collects the relevant profiling information in configurable intervals and uploads this information periodically to the Blackfire Agent. Blackfire Agent then forwards this information to the backend. It does all these in separate goroutines asynchronously. The heavy lifting of the profiler collection is all done by Go standard library profilers: e.g: See https://pkg.go.dev/runtime/pprof for more details
 
 # Prerequisites
 
