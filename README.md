@@ -15,7 +15,7 @@ You can also ask for help on how to set up your environment for Continuous Profi
 
 # API
 
-The probe has two API functions:
+The profiler has two API functions:
 
 ```go
 func Start(opts ...Option) error {}
@@ -33,7 +33,7 @@ An example using all available `Option`'s that can be used with `Start`:
 profiler.Start(CPUDuration(3 * time.Second), 
        Period(2 * time.Second),
        CPUProfileRate(1000),
-       WithProfileTypes(CPUProfile, ),
+       WithProfileTypes(CPUProfile),
        WithLabels({
             "key1": "value1",
             "key2": "value2",
