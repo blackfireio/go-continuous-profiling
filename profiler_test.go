@@ -10,7 +10,7 @@ import (
 	"time"
 
 	pprof_profile "github.com/google/pprof/profile"
-	"github.com/stretchr/testify/assert"
+	assert "github.com/stretchr/testify/require"
 	"mime/multipart"
 )
 
