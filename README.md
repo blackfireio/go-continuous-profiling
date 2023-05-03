@@ -40,7 +40,6 @@ profiler.Start(CPUDuration(3 * time.Second),
        }),
        WithAgentSocket("unix:///tmp/blackfire-agent.sock"),
        WithUploadTimeout(5 * time.Second),
-       WithCredentials("my-server-id", "my-server-token"),
 )
 defer profiler.Stop()
 ```
@@ -65,9 +64,6 @@ and uses the same default as the Blackfire Agent.
 
 `WithUploadTimeout`: Sets the upload timeout of the message that is sent to the Blackfire Agent. 
 The default is 10 seconds. Can also be set via the environment variable `BLACKFIRE_CONPROF_UPLOAD_TIMEOUT`.
-
-`WithCredentials`: Sets the server id/token pair. Can also be set via the environment variables
-`BLACKFIRE_SERVER_ID` and `BLACKFIRE_SERVER_TOKEN`.
 
 Note:
 If the same parameter is set by both an environment variable and a `Start` call, the explicit 
