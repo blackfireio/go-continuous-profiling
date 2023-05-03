@@ -8,9 +8,9 @@ Once the profiler is enabled, it collects the relevant profiling information in 
 
 Go >=1.18 and Blackfire Agent version >= 2.13.0 is required.
 
-# Questions&Feedback
+# Questions and Feedback
 
-You can ask any questions or provide feedback on the `#blackfire` channel for Continuous Profiling. 
+You can ask any questions or provide feedback on the `#blackfire-engineering` channel for Continuous Profiling. 
 You can also ask for help on how to set up your environment for Continuous Profiling.
 
 # API
