@@ -94,7 +94,14 @@ machine both Agent and probe will point to the same address. This is just for ex
 BLACKFIRE_SOCKET="tcp://127.0.0.1:8307" blackfire agent --log-level=5
 ```
 
-2. Run the following application. (`BLACKFIRE_SOCKET="tcp://127.0.0.1:8307" go run main.go`)
+2. Get the continuous profiler from the internal repository. 
+(Note: this step will not be required once we have a public release)
+
+```
+go get go.platform.sh/observability/blackfire/-/go-continous-profiling
+```
+
+3. Run the following application. (`BLACKFIRE_SOCKET="tcp://127.0.0.1:8307" go run main.go`)
 
 
 ```go
@@ -106,7 +113,7 @@ import (
 	"io"
 	"time"
 
-	profiler "github.com/blackfireio/go-conprof"
+	profiler "go.platform.sh/observability/blackfire/-/go-continous-profiling"
 )
 
 func doSomethingCpuIntensive() {
@@ -135,5 +142,5 @@ func main() {
 }
 ```
 
-3. Profiler will send data to the Agent and Agent will forward it to the Blackfire 
+4. Profiler will send data to the Agent and Agent will forward it to the Blackfire 
 backend. Data then can be visualized at https://blackfire.io
