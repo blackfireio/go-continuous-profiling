@@ -94,7 +94,7 @@ BLACKFIRE_SOCKET="tcp://127.0.0.1:8307" blackfire agent --log-level=5
 (Note: this step will not be required once we have a public release)
 
 ```
-go get go.platform.sh/observability/blackfire/-/go-continous-profiling
+GOPRIVATE=go.platform.sh/* go get go.platform.sh/observability/blackfire/-/go-continous-profiling
 ```
 
 3. Run the following application. (`BLACKFIRE_SOCKET="tcp://127.0.0.1:8307" go run main.go`)
