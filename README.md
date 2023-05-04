@@ -97,8 +97,11 @@ BLACKFIRE_SOCKET="tcp://127.0.0.1:8307" blackfire agent --log-level=5
 GOPRIVATE=go.platform.sh/* go get go.platform.sh/observability/blackfire/-/go-continous-profiling
 ```
 
-3. Run the following application. (`BLACKFIRE_SOCKET="tcp://127.0.0.1:8307" go run main.go`)
+3. Save the following code as `main.go` and run as following: 
 
+```
+BLACKFIRE_LOG_LEVEL=4 BLACKFIRE_AGENT_SOCKET="tcp://127.0.0.1:8307" go run main.go
+```
 
 ```go
 package main
@@ -131,12 +134,21 @@ func main() {
 	}
 	defer profiler.Stop()
 
-	doSomethingCpuIntensive()
+	for i := 0; i < 15; i++ {
+		doSomethingCpuIntensive()
 
-	// wait for the profiler to upload the profile
-	time.Sleep(2 * time.Second)
+		time.Sleep(1 * time.Second)
+	}
 }
 ```
 
 4. Profiler will send data to the Agent and Agent will forward it to the Blackfire 
-backend. Data then can be visualized at https://blackfire.io
+backend. Data then can be visualized at https://blackfire.io. You should be seeing
+logs like following:
+
+```
+...
+{"level":"debug","time":"2023-05-04T16:47:51.839134438+03:00","caller":"/home/supo/go/src/go.platform.sh/observability/blackfire/-/go-continous-profiling/profile.go:52","message":"CPU profile started for 1s"}
+{"level":"debug","time":"2023-05-04T16:47:51.840261444+03:00","caller":"/home/supo/go/src/go.platform.sh/observability/blackfire/-/go-continous-profiling/profiler.go:221","message":"Upload profile succeeded."}
+...
+```
