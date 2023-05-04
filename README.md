@@ -40,7 +40,6 @@ profiler.Start(CPUDuration(3 * time.Second),
        }),
        WithAgentSocket("unix:///tmp/blackfire-agent.sock"),
        WithUploadTimeout(5 * time.Second),
-       WithCredentials("my-server-id", "my-server-token"),
 )
 defer profiler.Stop()
 ```
@@ -65,9 +64,6 @@ and uses the same default as the Blackfire Agent.
 
 `WithUploadTimeout`: Sets the upload timeout of the message that is sent to the Blackfire Agent. 
 The default is 10 seconds. Can also be set via the environment variable `BLACKFIRE_CONPROF_UPLOAD_TIMEOUT`.
-
-`WithCredentials`: Sets the server id/token pair. Can also be set via the environment variables
-`BLACKFIRE_SERVER_ID` and `BLACKFIRE_SERVER_TOKEN`.
 
 Note:
 If the same parameter is set by both an environment variable and a `Start` call, the explicit 
@@ -94,7 +90,14 @@ machine both Agent and probe will point to the same address. This is just for ex
 BLACKFIRE_SOCKET="tcp://127.0.0.1:8307" blackfire agent --log-level=5
 ```
 
-2. Run the following application. (`BLACKFIRE_SOCKET="tcp://127.0.0.1:8307" go run main.go`)
+2. Get the continuous profiler from the internal repository. 
+(Note: this step will not be required once we have a public release)
+
+```
+GOPRIVATE=go.platform.sh/* go get go.platform.sh/observability/blackfire/-/go-continous-profiling
+```
+
+3. Run the following application. (`BLACKFIRE_SOCKET="tcp://127.0.0.1:8307" go run main.go`)
 
 
 ```go
@@ -106,7 +109,7 @@ import (
 	"io"
 	"time"
 
-	profiler "github.com/blackfireio/go-conprof"
+	profiler "go.platform.sh/observability/blackfire/-/go-continous-profiling"
 )
 
 func doSomethingCpuIntensive() {
@@ -135,5 +138,5 @@ func main() {
 }
 ```
 
-3. Profiler will send data to the Agent and Agent will forward it to the Blackfire 
+4. Profiler will send data to the Agent and Agent will forward it to the Blackfire 
 backend. Data then can be visualized at https://blackfire.io

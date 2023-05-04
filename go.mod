@@ -1,4 +1,4 @@
-module github.com/blackfireio/go-conprof
+module go.platform.sh/observability/blackfire/-/go-continous-profiling
 
 go 1.20
 
