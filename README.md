@@ -35,7 +35,7 @@ profiler.Start(CPUDuration(3 * time.Second),
        CPUProfileRate(1000),
        WithProfileTypes(CPUProfile),
        WithLabels({
-            "key1": "value1",
+            "service": "my-app",
             "key2": "value2",
        }),
        WithAgentSocket("unix:///tmp/blackfire-agent.sock"),
@@ -121,8 +121,11 @@ func doSomethingCpuIntensive() {
 }
 
 func main() {
-	err := profiler.Start(profiler.CPUDuration(1*time.Second),
-		profiler.Period(1*time.Second))
+	err := profiler.Start(
+		profiler.CPUDuration(1*time.Second),
+		profiler.Period(1*time.Second),
+		profiler.WithLabels(map[string]string{"service": "my-app"})
+	)
 	if err != nil {
 		panic("Error while starting Profiler")
 	}
