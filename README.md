@@ -94,7 +94,7 @@ BLACKFIRE_SOCKET="tcp://127.0.0.1:8307" blackfire agent --log-level=5
 (Note: this step will not be required once we have a public release)
 
 ```
-GOPRIVATE=go.platform.sh/* go get go.platform.sh/observability/blackfire/-/go-continous-profiling
+go get github.com/blackfireio/go-continuous-profiling-experimental
 ```
 
 3. Save the following code as `main.go` and run as following: 
@@ -112,7 +112,7 @@ import (
 	"io"
 	"time"
 
-	profiler "go.platform.sh/observability/blackfire/-/go-continous-profiling"
+	profiler "github.com/blackfireio/go-continuous-profiling-experimental"
 )
 
 func doSomethingCpuIntensive() {
@@ -151,7 +151,7 @@ logs like following:
 
 ```
 ...
-{"level":"debug","time":"2023-05-04T16:47:51.839134438+03:00","caller":"/home/supo/go/src/go.platform.sh/observability/blackfire/-/go-continous-profiling/profile.go:52","message":"CPU profile started for 1s"}
-{"level":"debug","time":"2023-05-04T16:47:51.840261444+03:00","caller":"/home/supo/go/src/go.platform.sh/observability/blackfire/-/go-continous-profiling/profiler.go:221","message":"Upload profile succeeded."}
+{"level":"debug","time":"2023-05-04T16:47:51.839134438+03:00","caller":".../profile.go:52","message":"CPU profile started for 1s"}
+{"level":"debug","time":"2023-05-04T16:47:51.840261444+03:00","caller":".../profiler.go:221","message":"Upload profile succeeded."}
 ...
 ```
