@@ -130,7 +130,7 @@ func main() {
 	err := profiler.Start(
 		profiler.CPUDuration(1*time.Second),
 		profiler.Period(1*time.Second),
-		profiler.WithLabels(map[string]string{"service": "my-app"})
+		profiler.WithLabels(map[string]string{"service": "my-app"}),
 	)
 	if err != nil {
 		panic("Error while starting Profiler")
