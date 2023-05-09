@@ -3,7 +3,7 @@ module github.com/blackfireio/go-continuous-profiling-experimental
 go 1.20
 
 require (
-	github.com/google/pprof v0.0.0-20230429030804-905365eefe3e
+	github.com/google/pprof v0.0.0-20230502171905-255e3b9b56de
 	github.com/rs/zerolog v1.29.1
 	github.com/stretchr/testify v1.8.2
 )
