@@ -85,8 +85,7 @@ machine both Agent and probe will point to the same address. This is just for ex
 BLACKFIRE_SOCKET="tcp://127.0.0.1:8307" blackfire agent --log-level=5
 ```
 
-2. Get the continuous profiler from the internal repository. 
-(Note: this step will not be required once we have a public release)
+2. Get the continuous profiler from the internal repository.
 
 ```
 go get github.com/blackfireio/go-continuous-profiling-experimental
