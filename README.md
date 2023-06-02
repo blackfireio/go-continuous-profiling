@@ -122,8 +122,6 @@ func doSomethingCpuIntensive() {
 
 func main() {
 	err := profiler.Start(
-		profiler.CPUDuration(1*time.Second),
-		profiler.Period(1*time.Second),
 		profiler.WithLabels(map[string]string{"service": "my-app"}),
 	)
 	if err != nil {
@@ -139,7 +137,7 @@ func main() {
 }
 ```
 
-4. Profiler will send data to the Agent and Agent will forward it to the Blackfire 
+4. Profiler will send data to the Agent in 45 seconds by default, and Agent will forward it to the Blackfire 
 backend. Data then can be visualized at https://blackfire.io. You should be seeing
 logs like following:
 

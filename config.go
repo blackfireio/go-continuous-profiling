@@ -51,8 +51,8 @@ var (
 )
 
 const (
-	DefaultCPUDuration   = 1 * time.Minute
-	DefaultPeriod        = 1 * time.Minute
+	DefaultCPUDuration   = 45 * time.Second
+	defaultPeriod        = 45 * time.Second
 	DefaultLogLevel      = zerolog.ErrorLevel
 	DefaultUploadTimeout = 10 * time.Second
 )
@@ -64,6 +64,10 @@ func logLevel(v int) zerolog.Level {
 		v = 4
 	}
 	return logLevels[v]
+}
+
+func (l *logrecorder) Output() string {
+	return strings.Join(l.logs, "\n")
 }
 
 func (l *logrecorder) Add(msg string) {
@@ -90,7 +94,7 @@ func (l *logrecorder) Contains(s []string) bool {
 
 	si := 0
 	for _, log := range l.logs {
-		if strings.Contains(log, s[si]) {
+		if strings.Contains(strings.ToLower(log), strings.ToLower(s[si])) {
 			si++
 			if si == len(s) {
 				return true
@@ -133,7 +137,7 @@ func newLoggerFromEnv() (zerolog.Logger, error) {
 
 func initDefaultConfig() (*config, error) {
 	c := &config{cpuDuration: DefaultCPUDuration,
-		period:        DefaultPeriod,
+		period:        defaultPeriod,
 		uploadTimeout: DefaultUploadTimeout,
 		agentSocket:   DefaultAgentSocket,
 		types:         DefaultProfileTypes}

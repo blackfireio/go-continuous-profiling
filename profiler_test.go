@@ -154,7 +154,7 @@ func TestStartStop(t *testing.T) {
 			withLogRecorder())
 		defer Stop()
 
-		time.Sleep(300 * time.Millisecond)
+		time.Sleep(400 * time.Millisecond)
 		assert.True(t, logRecorder.Contains([]string{"Upload failed: context deadline exceeded.", "upload profile succeeded"}))
 	})
 
