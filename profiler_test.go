@@ -122,7 +122,7 @@ func TestStartStop(t *testing.T) {
 		}
 
 		Start(CPUDuration(10*time.Millisecond),
-			Period(10*time.Millisecond),
+			period(10*time.Millisecond),
 			withHTTPClient(m),
 			withLogLevel(5),
 			withLogRecorder())
@@ -148,7 +148,7 @@ func TestStartStop(t *testing.T) {
 		}
 
 		Start(CPUDuration(100*time.Millisecond),
-			Period(100*time.Millisecond),
+			period(100*time.Millisecond),
 			withHTTPClient(m),
 			withLogLevel(5),
 			withLogRecorder())
@@ -167,7 +167,7 @@ func TestStartStop(t *testing.T) {
 		}
 
 		Start(CPUDuration(100*time.Millisecond),
-			Period(100*time.Millisecond),
+			period(100*time.Millisecond),
 			withHTTPClient(m),
 			withLogLevel(5),
 			withLogRecorder())
@@ -206,7 +206,7 @@ func TestStartStop(t *testing.T) {
 		}
 
 		Start(CPUDuration(200*time.Millisecond),
-			Period(200*time.Millisecond),
+			period(200*time.Millisecond),
 			withHTTPClient(m),
 			withLogLevel(5),
 			withLogRecorder())
@@ -226,7 +226,7 @@ func TestStartStop(t *testing.T) {
 
 		// code overrides env
 		os.Setenv("BLACKFIRE_CONPROF_PERIOD", "11")
-		Start(Period(4 * time.Second))
+		Start(period(4 * time.Second))
 		assert.Equal(t, activeProfiler.cfg.period, 4*time.Second)
 		Stop()
 		os.Unsetenv("BLACKFIRE_CONPROF_PERIOD")

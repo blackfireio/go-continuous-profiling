@@ -110,7 +110,7 @@ func newLoggerFromEnv() (zerolog.Logger, error) {
 	if v := os.Getenv("BLACKFIRE_LOG_LEVEL"); v != "" {
 		d, err := strconv.Atoi(v)
 		if err != nil {
-			rerr = fmt.Errorf("Invalid log level value.(%s)", v)
+			rerr = fmt.Errorf("invalid log level value.(%s)", v)
 		} else {
 			level = logLevel(d)
 		}
@@ -119,7 +119,7 @@ func newLoggerFromEnv() (zerolog.Logger, error) {
 	if v := os.Getenv("BLACKFIRE_LOG_FILE"); v != "" {
 		w, err := os.OpenFile(v, os.O_RDWR|os.O_CREATE, 0664)
 		if err != nil {
-			rerr = fmt.Errorf("Could not open log file at %s: %v", v, err)
+			rerr = fmt.Errorf("could not open log file at %s: %v", v, err)
 		} else {
 			out = w
 		}
@@ -164,6 +164,8 @@ func initDefaultConfig() (*config, error) {
 			c.cpuDuration = time.Duration(d) * time.Second
 		}
 	}
+
+	// undocumented
 	if v := os.Getenv("BLACKFIRE_CONPROF_PERIOD"); v != "" {
 		d, err := strconv.Atoi(v)
 		if err != nil {
@@ -172,6 +174,7 @@ func initDefaultConfig() (*config, error) {
 			c.period = time.Duration(d) * time.Second
 		}
 	}
+
 	if v := os.Getenv("BLACKFIRE_CONPROF_CPU_PROFILERATE"); v != "" {
 		d, err := strconv.Atoi(v)
 		if err != nil {
@@ -202,7 +205,8 @@ func CPUDuration(d time.Duration) Option {
 	}
 }
 
-func Period(d time.Duration) Option {
+// undocumented
+func period(d time.Duration) Option {
 	return func(cfg *config) {
 		cfg.period = d
 	}
