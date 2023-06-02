@@ -236,7 +236,7 @@ func TestStartStop(t *testing.T) {
 		err := Start()
 		assert.NotNil(t, activeProfiler)
 		assert.Nil(t, err)
-		assert.Equal(t, activeProfiler.cfg.period, DefaultPeriod)
+		assert.Equal(t, activeProfiler.cfg.period, defaultPeriod)
 		Stop()
 		os.Unsetenv("BLACKFIRE_CONPROF_PERIOD")
 
