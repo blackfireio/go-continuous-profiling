@@ -1,6 +1,6 @@
 module github.com/blackfireio/go-continuous-profiling-experimental
 
-go 1.20
+go 1.18
 
 require (
 	github.com/google/pprof v0.0.0-20230602150820-91b7bce49751
