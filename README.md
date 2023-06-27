@@ -1,4 +1,4 @@
-# Blackfire Continuous Profiler for Go
+# Experimental Blackfire Continuous Profiler for Go
 
 Blackfire Continuous Profiler continuously collects and uploads profiling data to the Blackfire servers.
 
