@@ -25,12 +25,14 @@ it to the Agent periodically.
 An example using all available `Option`'s that can be used with `Start`:
 
 ```go
-profiler.Start(CPUDuration(3 * time.Second), 
+profiler.Start(
+       AppName("my-app"),
+       CPUDuration(3 * time.Second),
        Period(2 * time.Second),
        CPUProfileRate(1000),
        WithProfileTypes(CPUProfile),
        WithLabels({
-            "application_name": "my-app",
+            "key1": "value1",
             "key2": "value2",
        }),
        WithAgentSocket("unix:///tmp/blackfire-agent.sock"),
@@ -38,6 +40,8 @@ profiler.Start(CPUDuration(3 * time.Second),
 )
 defer profiler.Stop()
 ```
+
+`AppName`: Sets the application name. Can also be set via the environment variable `BLACKFIRE_CONPROF_APP_NAME`.
 
 `CPUDuration`: CPUDuration specifies the length at which to collect CPU profiles. 
 The default is 1 minute. Can also be set via the environment variable `BLACKFIRE_CONPROF_CPU_DURATION`.
@@ -122,7 +126,7 @@ func doSomethingCpuIntensive() {
 
 func main() {
 	err := profiler.Start(
-		profiler.WithLabels(map[string]string{"application_name": "my-app"}),
+		profiler.AppName("my-app"),
 	)
 	if err != nil {
 		panic("Error while starting Profiler")

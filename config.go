@@ -220,8 +220,8 @@ func initDefaultConfig() (*config, error) {
 		labelName string
 		envVar    string
 	}{
+		{"application_name", "BLACKFIRE_CONPROF_APP_NAME"},
 		{"application_name", "PLATFORM_APPLICATION_NAME"},
-		{"application_name", "BLACKFIRE_APPLICATION_NAME"},
 
 		{"project_id", "PLATFORM_PROJECT"},
 	}
@@ -263,6 +263,13 @@ func WithProfileTypes(types ...ProfileType) Option {
 	return func(cfg *config) {
 		cfg.types = []ProfileType{} // reset
 		cfg.types = append(cfg.types, types...)
+	}
+}
+
+// Shortcut to set the "application_name" label
+func AppName(appName string) Option {
+	return func(cfg *config) {
+		cfg.labels["application_name"] = appName
 	}
 }
 
