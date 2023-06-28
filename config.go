@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"runtime"
 	"strconv"
 	"strings"
 	"sync"
@@ -136,11 +137,13 @@ func newLoggerFromEnv() (zerolog.Logger, error) {
 }
 
 func initDefaultConfig() (*config, error) {
-	c := &config{cpuDuration: DefaultCPUDuration,
+	c := &config{
+		cpuDuration:   DefaultCPUDuration,
 		period:        defaultPeriod,
 		uploadTimeout: DefaultUploadTimeout,
 		agentSocket:   DefaultAgentSocket,
-		types:         DefaultProfileTypes}
+		types:         DefaultProfileTypes,
+	}
 
 	logger, err := newLoggerFromEnv()
 	if err != nil {
@@ -200,6 +203,40 @@ func initDefaultConfig() (*config, error) {
 		c.cpuDuration = c.period
 	}
 
+	// Populate default labels.
+	c.labels = map[string]string{
+		"runtime":         "go",
+		"runtime_os":      runtime.GOOS,
+		"runtime_arch":    runtime.GOARCH,
+		"runtime_version": runtime.Version(),
+	}
+
+	if hostname, err := os.Hostname(); err == nil {
+		c.labels["host"] = hostname
+	}
+
+	// Collect more labels from environment variables. Priority matters for the same label name.
+	lookup := []struct {
+		labelName string
+		envVar    string
+	}{
+		{"application_name", "BLACKFIRE_CONPROF_APP_NAME"},
+		{"application_name", "PLATFORM_APPLICATION_NAME"},
+
+		{"project_id", "PLATFORM_PROJECT"},
+	}
+
+	for _, entry := range lookup {
+		// Don't override
+		if _, exists := c.labels[entry.labelName]; exists {
+			continue
+		}
+
+		if v := os.Getenv(entry.envVar); v != "" {
+			c.labels[entry.labelName] = v
+		}
+	}
+
 	return c, nil
 }
 
@@ -229,9 +266,19 @@ func WithProfileTypes(types ...ProfileType) Option {
 	}
 }
 
+// Shortcut to set the "application_name" label
+func AppName(appName string) Option {
+	return func(cfg *config) {
+		cfg.labels["application_name"] = appName
+	}
+}
+
 func WithLabels(labels map[string]string) Option {
 	return func(cfg *config) {
-		cfg.labels = labels
+		// Merge with pre-populated labels
+		for name, value := range labels {
+			cfg.labels[name] = value
+		}
 	}
 }
 
