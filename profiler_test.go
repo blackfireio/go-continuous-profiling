@@ -87,13 +87,16 @@ func logContains(logs []string, s []string) bool {
 
 func TestStartStop(t *testing.T) {
 	t.Run("basic", func(t *testing.T) {
+		done := make(chan bool, 10)
 		m := &MockHTTPClient{}
 		m.DoFunc = func(req *http.Request) (*http.Response, error) {
 			labels, profiles := parseConProfReq(t, req)
 			assert.Equal(t, labels["k1"], "v1")
 			assert.Equal(t, labels["k2"], "v2")
-			assert.Equal(t, len(labels), 2)
+			assert.Equal(t, len(labels), 7)
 			assert.Equal(t, profiles[0].SampleType[1].Type, "cpu")
+
+			done <- true
 
 			return &http.Response{
 				StatusCode: 200,
@@ -109,7 +112,11 @@ func TestStartStop(t *testing.T) {
 		err := Start()
 		assert.True(t, strings.Contains(err.Error(), "Profiler is already running"))
 
-		time.Sleep(200 * time.Millisecond)
+		select {
+		case <-time.After(time.Duration(1 * time.Second)):
+			t.Fatal("test timeouted")
+		case <-done:
+		}
 	})
 
 	t.Run("invalidagentresponse", func(t *testing.T) {
@@ -134,12 +141,14 @@ func TestStartStop(t *testing.T) {
 	})
 
 	t.Run("uploadtimeout", func(t *testing.T) {
+		done := make(chan bool, 10)
 		m := &MockHTTPClient{}
 		m.DoFunc = func(req *http.Request) (*http.Response, error) {
 			m.ReqCount++
 			if m.ReqCount < maxUploadRetries {
 				return nil, context.DeadlineExceeded
 			} else {
+				done <- true
 				return &http.Response{
 					StatusCode: 200,
 					Body:       nil,
@@ -154,7 +163,12 @@ func TestStartStop(t *testing.T) {
 			withLogRecorder())
 		defer Stop()
 
-		time.Sleep(400 * time.Millisecond)
+		select {
+		case <-time.After(time.Duration(1 * time.Second)):
+			t.Fatal("test timeouted")
+		case <-done:
+		}
+
 		assert.True(t, logRecorder.Contains([]string{"Upload failed: context deadline exceeded.", "upload profile succeeded"}))
 	})
 
