@@ -276,6 +276,11 @@ func WithProfileTypes(types ...ProfileType) Option {
 	}
 }
 
+// deprecated: use WithAppName
+func AppName(appName string) Option {
+	return WithAppName(appName)
+}
+
 // Shortcut to set the "application_name" label
 func WithAppName(appName string) Option {
 	return func(cfg *config) {
