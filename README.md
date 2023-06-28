@@ -26,10 +26,9 @@ An example using all available `Option`'s that can be used with `Start`:
 
 ```go
 profiler.Start(
-       AppName("my-app"),
-       CPUDuration(3 * time.Second),
-       Period(2 * time.Second),
-       CPUProfileRate(1000),
+       WithAppName("my-app"),
+       WithCPUDuration(3 * time.Second),
+       WithCPUProfileRate(1000),
        WithProfileTypes(CPUProfile),
        WithLabels({
             "key1": "value1",
@@ -41,17 +40,14 @@ profiler.Start(
 defer profiler.Stop()
 ```
 
-`AppName`: Sets the application name. Can also be set via the environment variable `BLACKFIRE_CONPROF_APP_NAME`.
+`WithAppName`: Sets the application name. Can also be set via the environment variable `BLACKFIRE_CONPROF_APP_NAME`.
 
-`CPUDuration`: CPUDuration specifies the length at which to collect CPU profiles. 
+`WithCPUDuration`: Specifies the length at which to collect CPU profiles.
 The default is 1 minute. Can also be set via the environment variable `BLACKFIRE_CONPROF_CPU_DURATION`.
 
-`CPUProfileRate`: CPUProfileRate sets the CPU profiling rate to Hz samples per second. 
-The default is defined by the Go runtime as 100 Hz. Can also be set via the environment 
+`WithCPUProfileRate`: Sets the CPU profiling rate to Hz samples per second.
+The default is defined by the Go runtime as 100 Hz. Can also be set via the environment
 variable `BLACKFIRE_CONPROF_CPU_PROFILERATE`.
-
-`Period`: Period specifies the interval at which to collect profiles. The default is 1 minute. 
-Can also be set via the environment variable `BLACKFIRE_CONPROF_PERIOD`.
 
 `WithProfileTypes`: WithProfileTypes sets the profiler types. Multiple profile types can be set.
 The default is `CPUProfile`.
@@ -126,7 +122,7 @@ func doSomethingCpuIntensive() {
 
 func main() {
 	err := profiler.Start(
-		profiler.AppName("my-app"),
+		profiler.WithAppName("my-app"),
 	)
 	if err != nil {
 		panic("Error while starting Profiler")

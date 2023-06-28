@@ -38,7 +38,7 @@ func TestConfig(t *testing.T) {
 	require.Equal(t, "bar", config.labels["application_name"])
 	require.Equal(t, "go", config.labels["runtime"])
 
-	AppName("duh!")(config)
+	WithAppName("duh!")(config)
 
 	require.Equal(t, "duh!", config.labels["application_name"])
 	require.Equal(t, "go", config.labels["runtime"])

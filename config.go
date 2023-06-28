@@ -240,7 +240,12 @@ func initDefaultConfig() (*config, error) {
 	return c, nil
 }
 
+// deprecated: use WithCPUDuration
 func CPUDuration(d time.Duration) Option {
+	return WithCPUDuration(d)
+}
+
+func WithCPUDuration(d time.Duration) Option {
 	return func(cfg *config) {
 		cfg.cpuDuration = d
 	}
@@ -253,7 +258,12 @@ func period(d time.Duration) Option {
 	}
 }
 
+// deprecated: use WithCPUProfileRate
 func CPUProfileRate(hz int) Option {
+	return WithCPUProfileRate(hz)
+}
+
+func WithCPUProfileRate(hz int) Option {
 	return func(cfg *config) {
 		cfg.cpuProfileRate = hz
 	}
@@ -267,7 +277,7 @@ func WithProfileTypes(types ...ProfileType) Option {
 }
 
 // Shortcut to set the "application_name" label
-func AppName(appName string) Option {
+func WithAppName(appName string) Option {
 	return func(cfg *config) {
 		cfg.labels["application_name"] = appName
 	}

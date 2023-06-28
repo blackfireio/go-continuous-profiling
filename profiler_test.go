@@ -101,7 +101,7 @@ func TestStartStop(t *testing.T) {
 			}, nil
 		}
 
-		Start(CPUDuration(100*time.Millisecond),
+		Start(WithCPUDuration(100*time.Millisecond),
 			withHTTPClient(m),
 			WithLabels(map[string]string{"k1": "v1", "k2": "v2"}))
 		defer Stop()
@@ -121,7 +121,7 @@ func TestStartStop(t *testing.T) {
 			}, nil
 		}
 
-		Start(CPUDuration(10*time.Millisecond),
+		Start(WithCPUDuration(10*time.Millisecond),
 			period(10*time.Millisecond),
 			withHTTPClient(m),
 			withLogLevel(5),
@@ -147,7 +147,7 @@ func TestStartStop(t *testing.T) {
 			}
 		}
 
-		Start(CPUDuration(100*time.Millisecond),
+		Start(WithCPUDuration(100*time.Millisecond),
 			period(100*time.Millisecond),
 			withHTTPClient(m),
 			withLogLevel(5),
@@ -166,7 +166,7 @@ func TestStartStop(t *testing.T) {
 			return nil, context.DeadlineExceeded
 		}
 
-		Start(CPUDuration(100*time.Millisecond),
+		Start(WithCPUDuration(100*time.Millisecond),
 			period(100*time.Millisecond),
 			withHTTPClient(m),
 			withLogLevel(5),
@@ -205,7 +205,7 @@ func TestStartStop(t *testing.T) {
 			}, nil
 		}
 
-		Start(CPUDuration(200*time.Millisecond),
+		Start(WithCPUDuration(200*time.Millisecond),
 			period(200*time.Millisecond),
 			withHTTPClient(m),
 			withLogLevel(5),
