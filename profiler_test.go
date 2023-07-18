@@ -93,7 +93,7 @@ func TestStartStop(t *testing.T) {
 			labels, profiles := parseConProfReq(t, req)
 			assert.Equal(t, labels["k1"], "v1")
 			assert.Equal(t, labels["k2"], "v2")
-			assert.Equal(t, len(labels), 7)
+			assert.Equal(t, len(labels), 8)
 			assert.Equal(t, profiles[0].SampleType[1].Type, "cpu")
 
 			done <- true
