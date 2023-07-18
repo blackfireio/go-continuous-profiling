@@ -205,6 +205,7 @@ func initDefaultConfig() (*config, error) {
 
 	// Populate default labels.
 	c.labels = map[string]string{
+		"language":        "go",
 		"runtime":         "go",
 		"runtime_os":      runtime.GOOS,
 		"runtime_arch":    runtime.GOARCH,
