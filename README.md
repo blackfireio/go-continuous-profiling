@@ -43,7 +43,7 @@ defer profiler.Stop()
 `WithAppName`: Sets the application name. Can also be set via the environment variable `BLACKFIRE_CONPROF_APP_NAME`.
 
 `WithCPUDuration`: Specifies the length at which to collect CPU profiles.
-The default is 1 minute. Can also be set via the environment variable `BLACKFIRE_CONPROF_CPU_DURATION`.
+The default is 45 seconds. Can also be set via the environment variable `BLACKFIRE_CONPROF_CPU_DURATION`.
 
 `WithCPUProfileRate`: Sets the CPU profiling rate to Hz samples per second.
 The default is defined by the Go runtime as 100 Hz. Can also be set via the environment
