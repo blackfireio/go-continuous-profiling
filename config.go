@@ -15,12 +15,8 @@ import (
 
 type Option func(*config)
 
-type HTTPClientInterface interface {
-	Do(req *http.Request) (*http.Response, error)
-}
-
 type config struct {
-	httpClient     HTTPClientInterface
+	httpClient     *http.Client
 	cpuDuration    time.Duration
 	period         time.Duration
 	uploadTimeout  time.Duration
@@ -53,7 +49,7 @@ var (
 
 const (
 	DefaultCPUDuration   = 45 * time.Second
-	defaultPeriod        = 45 * time.Second
+	defaultPeriod        = 1 * time.Second // todo: CHANGE default
 	DefaultLogLevel      = zerolog.ErrorLevel
 	DefaultUploadTimeout = 10 * time.Second
 )
@@ -309,7 +305,7 @@ func withLogLevel(d int) Option {
 }
 
 // this is only used for testing internally to mock the internal HTTP client.
-func withHTTPClient(h HTTPClientInterface) Option {
+func withHTTPClient(h *http.Client) Option {
 	return func(cfg *config) {
 		cfg.httpClient = h
 	}
