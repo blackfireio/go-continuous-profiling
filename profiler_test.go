@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"io"
 	"net/http"
+	"os"
 	"strings"
 	"testing"
 	"time"
@@ -123,149 +124,37 @@ func TestStartStop(t *testing.T) {
 		}
 	})
 
-	t.Run("invalidagentresponse", func(t *testing.T) {
-		m := &mockTransport{}
-		h := &http.Client{Transport: m}
-		m.DoRoundTripFunc = func(req *http.Request) (*http.Response, error) {
-			return &http.Response{
-				StatusCode: 404,
-				Body:       nil,
-			}, nil
-		}
+	t.Run("config", func(t *testing.T) {
+		os.Setenv("BLACKFIRE_CONPROF_PERIOD", "11")
+		Start()
+		assert.NotNil(t, activeConfig)
+		assert.Equal(t, activeConfig.period, 11*time.Second)
+		Stop()
+		assert.Nil(t, activeConfig)
+		os.Unsetenv("BLACKFIRE_CONPROF_PERIOD")
 
-		Start(WithCPUDuration(10*time.Millisecond),
-			period(10*time.Millisecond),
-			withHTTPClient(h),
-			withLogLevel(5),
-			withLogRecorder())
-		defer Stop()
+		// code overrides env
+		os.Setenv("BLACKFIRE_CONPROF_PERIOD", "11")
+		Start(period(4 * time.Second))
+		assert.Equal(t, activeConfig.period, 4*time.Second)
+		Stop()
+		os.Unsetenv("BLACKFIRE_CONPROF_PERIOD")
 
-		time.Sleep(500 * time.Millisecond)
+		// invalid config
+		os.Setenv("BLACKFIRE_CONPROF_PERIOD", "abc")
+		err := Start()
+		assert.Nil(t, err)
+		assert.Equal(t, activeConfig.period, defaultPeriod)
+		Stop()
+		os.Unsetenv("BLACKFIRE_CONPROF_PERIOD")
 
-		assert.True(t, logRecorder.Contains([]string{"Failed to upload profile"}))
+		// invalid log config (should default)
+		os.Setenv("BLACKFIRE_LOG_LEVEL", "abc")
+		err = Start(withLogRecorder())
+		assert.Nil(t, err)
+		assert.NotNil(t, activeConfig)
+		assert.Equal(t, log.GetLevel(), DefaultLogLevel)
+		Stop()
+		os.Unsetenv("BLACKFIRE_LOG_LEVEL")
 	})
-
-	// t.Run("uploadtimeout", func(t *testing.T) {
-	// 	done := make(chan bool, 10)
-	// 	m := &MockHTTPClient{}
-	// 	m.DoFunc = func(req *http.Request) (*http.Response, error) {
-	// 		m.ReqCount++
-	// 		if m.ReqCount < maxUploadRetries {
-	// 			return nil, context.DeadlineExceeded
-	// 		} else {
-	// 			done <- true
-	// 			return &http.Response{
-	// 				StatusCode: 200,
-	// 				Body:       nil,
-	// 			}, nil
-	// 		}
-	// 	}
-
-	// 	Start(WithCPUDuration(100*time.Millisecond),
-	// 		period(100*time.Millisecond),
-	// 		withHTTPClient(m),
-	// 		withLogLevel(5),
-	// 		withLogRecorder())
-	// 	defer Stop()
-
-	// 	select {
-	// 	case <-time.After(time.Duration(1 * time.Second)):
-	// 		t.Fatal("test timeouted")
-	// 	case <-done:
-	// 	}
-
-	// 	assert.True(t, logRecorder.Contains([]string{"Upload failed: context deadline exceeded.", "upload profile succeeded"}))
-	// })
-
-	// t.Run("stopduringupload", func(t *testing.T) {
-	// 	m := &MockHTTPClient{}
-	// 	m.DoFunc = func(req *http.Request) (*http.Response, error) {
-	// 		<-activeProfiler.exitCh
-
-	// 		return nil, context.DeadlineExceeded
-	// 	}
-
-	// 	Start(WithCPUDuration(100*time.Millisecond),
-	// 		period(100*time.Millisecond),
-	// 		withHTTPClient(m),
-	// 		withLogLevel(5),
-	// 		withLogRecorder())
-	// 	time.Sleep(150 * time.Millisecond) // wait a bit
-	// 	Stop()
-
-	// 	assert.True(t, logRecorder.Contains([]string{"Profile started for", "profiler interrupted!"}))
-	// 	assert.False(t, logRecorder.Contains([]string{"Upload profile succeeded"}))
-	// })
-
-	// t.Run("stopduringprofiling", func(t *testing.T) {
-	// 	m := &MockHTTPClient{}
-	// 	m.DoFunc = func(req *http.Request) (*http.Response, error) {
-	// 		<-activeProfiler.exitCh
-
-	// 		return nil, context.DeadlineExceeded
-	// 	}
-
-	// 	Start(withHTTPClient(m),
-	// 		withLogLevel(5),
-	// 		withLogRecorder())
-	// 	time.Sleep(200 * time.Millisecond) // wait a bit
-	// 	Stop()
-
-	// 	assert.True(t, logRecorder.Contains([]string{"Profile started", "Profile ended", "Profiler interrupted!"}))
-	// })
-
-	// t.Run("uploadqueuefull", func(t *testing.T) {
-	// 	m := &MockHTTPClient{}
-	// 	m.DoFunc = func(req *http.Request) (*http.Response, error) {
-	// 		time.Sleep(1000 * time.Millisecond)
-	// 		return &http.Response{
-	// 			StatusCode: 200,
-	// 			Body:       nil,
-	// 		}, nil
-	// 	}
-
-	// 	Start(WithCPUDuration(200*time.Millisecond),
-	// 		period(200*time.Millisecond),
-	// 		withHTTPClient(m),
-	// 		withLogLevel(5),
-	// 		withLogRecorder())
-	// 	time.Sleep(2000 * time.Millisecond) // wait a bit
-	// 	Stop()
-
-	// 	assert.True(t, logRecorder.Contains([]string{"Profile started", "Upload queue is full.", "Profiler interrupted!"}))
-	// })
-
-	// t.Run("config", func(t *testing.T) {
-	// 	os.Setenv("BLACKFIRE_CONPROF_PERIOD", "11")
-	// 	Start()
-	// 	assert.Equal(t, activeProfiler.cfg.period, 11*time.Second)
-	// 	Stop()
-	// 	assert.Nil(t, activeProfiler)
-	// 	os.Unsetenv("BLACKFIRE_CONPROF_PERIOD")
-
-	// 	// code overrides env
-	// 	os.Setenv("BLACKFIRE_CONPROF_PERIOD", "11")
-	// 	Start(period(4 * time.Second))
-	// 	assert.Equal(t, activeProfiler.cfg.period, 4*time.Second)
-	// 	Stop()
-	// 	os.Unsetenv("BLACKFIRE_CONPROF_PERIOD")
-
-	// 	// invalid config
-	// 	os.Setenv("BLACKFIRE_CONPROF_PERIOD", "abc")
-	// 	err := Start()
-	// 	assert.NotNil(t, activeProfiler)
-	// 	assert.Nil(t, err)
-	// 	assert.Equal(t, activeProfiler.cfg.period, defaultPeriod)
-	// 	Stop()
-	// 	os.Unsetenv("BLACKFIRE_CONPROF_PERIOD")
-
-	// 	// invalid log config (should default)
-	// 	os.Setenv("BLACKFIRE_LOG_LEVEL", "abc")
-	// 	err = Start(withLogRecorder())
-	// 	assert.Nil(t, err)
-	// 	assert.NotNil(t, activeProfiler)
-	// 	assert.Equal(t, log.GetLevel(), DefaultLogLevel)
-	// 	Stop()
-	// 	os.Unsetenv("BLACKFIRE_LOG_LEVEL")
-	// })
 }

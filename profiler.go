@@ -5,15 +5,17 @@ import (
 	"fmt"
 	"net"
 	"net/http"
-	"os"
 	"regexp"
 	"strings"
+	"sync"
 
 	dd_profiler "gopkg.in/DataDog/dd-trace-go.v1/profiler"
 )
 
 var (
-	errOldAgent = errors.New("continuous profiling feature requires Blackfire Agent >= 2.13.0")
+	mu           sync.Mutex
+	activeConfig *config // used for testing
+	errOldAgent  = errors.New("continuous profiling feature requires Blackfire Agent >= 2.13.0")
 )
 
 const (
@@ -55,38 +57,26 @@ func (t *bfTransport) RoundTrip(req *http.Request) (*http.Response, error) {
 			log.Error().Err(errOldAgent).Send()
 			return response, errOldAgent
 		}
+		return response, err
 	}
 
-	// TODO: same logic as below
-	// resp, err := p.cfg.httpClient.Do(req)
-	// if err != nil {
-	// 	if strings.Contains(err.Error(), "malformed HTTP version") {
-	// 		return errOldAgent
-	// 	}
-	// 	return &retriableError{err}
-	// }
-	// if resp.Body != nil {
-	// 	defer resp.Body.Close()
-	// }
-
-	// if resp.StatusCode >= 200 && resp.StatusCode <= 299 {
-	// 	return nil
-	// } else if resp.StatusCode == 404 {
-	// 	return errOldAgent
-	// }
-
-	// return errors.New(resp.Status)
+	if response.StatusCode == 404 {
+		log.Error().Err(errOldAgent).Send()
+		return response, errOldAgent
+	}
 
 	return response, err
 }
 
 func Start(opts ...Option) error {
-	defer os.Unsetenv("DD_TRACE_AGENT_URL")
+	mu.Lock()
+	defer mu.Unlock()
 
 	cfg, err := newProfilerConfig(opts...)
 	if err != nil {
 		return err
 	}
+	activeConfig = cfg
 
 	n, a, err := parseNetworkAddressString(cfg.agentSocket)
 	if err != nil {
@@ -160,5 +150,9 @@ func Start(opts ...Option) error {
 }
 
 func Stop() {
+	mu.Lock()
+	defer mu.Unlock()
+
+	activeConfig = nil
 	dd_profiler.Stop()
 }
