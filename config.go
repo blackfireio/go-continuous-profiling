@@ -49,7 +49,7 @@ var (
 
 const (
 	DefaultCPUDuration   = 45 * time.Second
-	defaultPeriod        = 1 * time.Second // todo: CHANGE default
+	defaultPeriod        = 45 * time.Second
 	DefaultLogLevel      = zerolog.ErrorLevel
 	DefaultUploadTimeout = 10 * time.Second
 )
