@@ -34,3 +34,7 @@ endif
 .PHONY: bench
 bench:
 	go test -bench . -benchmem 
+
+print-version:
+	@go run cmd/print_version.go
+.PHONY: print-version
