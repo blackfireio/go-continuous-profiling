@@ -9,7 +9,7 @@ type version struct {
 }
 
 // tag is the current release tag. Must be updated manually.
-var probeVersion = version{Major: 1, Minor: 0, Patch: 0}
+var Version = version{Major: 1, Minor: 0, Patch: 0}
 
 func (v version) String() string {
 	return fmt.Sprintf("v%d.%d.%d", v.Major, v.Minor, v.Patch)
