@@ -3,8 +3,6 @@ package profiler
 import (
 	"errors"
 	"fmt"
-	"net"
-	"net/http"
 	"regexp"
 	"strings"
 	"sync"
@@ -19,7 +17,7 @@ var (
 )
 
 const (
-	agentConProfUri = "profiling/v1/input"
+	agentConProfUri = "/profiling/v1/input"
 )
 
 func parseNetworkAddressString(agentSocket string) (network string, address string, err error) {
@@ -46,28 +44,6 @@ func newProfilerConfig(opts ...Option) (*config, error) {
 	return cfg, nil
 }
 
-type bfTransport struct {
-	Transport http.RoundTripper
-}
-
-func (t *bfTransport) RoundTrip(req *http.Request) (*http.Response, error) {
-	response, err := t.Transport.RoundTrip(req)
-	if err != nil {
-		if strings.Contains(err.Error(), "malformed HTTP version") {
-			log.Error().Err(errOldAgent).Send()
-			return response, errOldAgent
-		}
-		return response, err
-	}
-
-	if response.StatusCode == 404 {
-		log.Error().Err(errOldAgent).Send()
-		return response, errOldAgent
-	}
-
-	return response, err
-}
-
 func Start(opts ...Option) error {
 	mu.Lock()
 	defer mu.Unlock()
@@ -78,23 +54,31 @@ func Start(opts ...Option) error {
 	}
 	activeConfig = cfg
 
-	n, a, err := parseNetworkAddressString(cfg.agentSocket)
+	protocol, address, err := parseNetworkAddressString(cfg.agentSocket)
 	if err != nil {
 		return fmt.Errorf("invalid agent socket. (%s)", cfg.agentSocket)
 	}
-	if n == "unix" {
-		cfg.agentEndpoint = fmt.Sprintf("http://unix/%s", agentConProfUri)
-	} else if n == "tcp" {
-		cfg.agentEndpoint = fmt.Sprintf("http://%s/%s", a, agentConProfUri)
-	} else if n == "http" || n == "https" {
-		cfg.agentEndpoint = cfg.agentSocket + "/" + agentConProfUri
-	} else {
-		return fmt.Errorf("invalid agent socket. (%s)", cfg.agentSocket)
-	}
 
-	apiKey := ""
-	if cfg.serverId != "" && cfg.serverToken != "" {
-		apiKey = fmt.Sprintf("%s:%s", cfg.serverId, cfg.serverToken)
+	var ddOpts []dd_profiler.Option
+	if protocol == "http" || protocol == "https" {
+		ddOpts = []dd_profiler.Option{
+			dd_profiler.WithURL(strings.TrimSuffix(cfg.agentSocket, "/") + agentConProfUri),
+			// Unfortunately, it triggers a warning: "WARN: profiler.WithAgentlessUpload is currently for internal usage only and not officially supported."
+			dd_profiler.WithAgentlessUpload(),
+			// An API key is required by the agent less mode, but we don't use it
+			dd_profiler.WithAPIKey("00000000000000000000000000000000"),
+		}
+	} else if protocol == "tcp" {
+		ddOpts = []dd_profiler.Option{
+			dd_profiler.WithAgentAddr(strings.TrimSuffix(address, "/")),
+		}
+	} else if protocol == "unix" {
+		ddOpts = []dd_profiler.Option{
+			// Connection to the unix socket is handled by our custom HTTP client
+			dd_profiler.WithAgentAddr("localhost"),
+		}
+	} else {
+		return fmt.Errorf("invalid agent socket protocol: %v [%v]", protocol, cfg.agentSocket)
 	}
 
 	mapLabelsToTags := func(m map[string]string) []string {
@@ -124,15 +108,10 @@ func Start(opts ...Option) error {
 	// generate a custom http client for hooking the transport
 	httpClient := cfg.httpClient
 	if httpClient == nil {
-		t := &http.Transport{
-			Dial: func(proto, addr string) (conn net.Conn, err error) {
-				return net.Dial(n, a)
-			},
-		}
-		httpClient = &http.Client{Transport: &bfTransport{Transport: t}}
+		httpClient = NewHTTPClient(protocol, address, cfg.serverId, cfg.serverToken)
 	}
 
-	err = dd_profiler.Start(
+	ddOpts = append(ddOpts,
 		dd_profiler.WithHTTPClient(httpClient),
 		dd_profiler.CPUProfileRate(cfg.cpuProfileRate),
 		dd_profiler.WithPeriod(cfg.period),
@@ -140,9 +119,8 @@ func Start(opts ...Option) error {
 		dd_profiler.WithTags(mapLabelsToTags(cfg.labels)...),
 		dd_profiler.WithUploadTimeout(cfg.uploadTimeout),
 		dd_profiler.WithProfileTypes(mapProfTypesToDDProfTypes(cfg.types)...),
-		dd_profiler.WithAPIKey(apiKey),
 	)
-	if err != nil {
+	if err = dd_profiler.Start(ddOpts...); err != nil {
 		return err
 	}
 

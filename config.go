@@ -22,7 +22,6 @@ type config struct {
 	uploadTimeout  time.Duration
 	cpuProfileRate int
 	agentSocket    string
-	agentEndpoint  string
 	types          []ProfileType
 	labels         map[string]string
 	serverId       string
