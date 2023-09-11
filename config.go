@@ -205,6 +205,7 @@ func initDefaultConfig() (*config, error) {
 		"runtime_os":      runtime.GOOS,
 		"runtime_arch":    runtime.GOARCH,
 		"runtime_version": runtime.Version(),
+		"probe_version":   Version.String(),
 	}
 
 	if hostname, err := os.Hostname(); err == nil {
