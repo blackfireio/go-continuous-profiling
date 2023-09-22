@@ -138,12 +138,4 @@ func main() {
 ```
 
 4. Profiler will send data to the Agent every 45 seconds by default, and Agent will forward it to the Blackfire 
-backend. Data then can be visualized at https://blackfire.io. You should be seeing
-logs like following:
-
-```
-...
-{"level":"debug","time":"2023-05-04T16:47:51.839134438+03:00","caller":".../profile.go:52","message":"CPU profile started for 1s"}
-{"level":"debug","time":"2023-05-04T16:47:51.840261444+03:00","caller":".../profiler.go:221","message":"Upload profile succeeded."}
-...
-```
+backend. Data then can be visualized at https://blackfire.io.
