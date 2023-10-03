@@ -3,6 +3,7 @@ package profiler
 import (
 	"fmt"
 	"os"
+	"regexp"
 	"strconv"
 	"strings"
 	"sync"
@@ -128,5 +129,30 @@ func NewDataDogLoggerBridge(logger zerolog.Logger) *DataDogLoggerBridge {
 }
 
 func (l *DataDogLoggerBridge) Log(msg string) {
-	l.logger.Info().Msg(msg)
+	level, errorMsg := parseDDLog(msg)
+	if level == zerolog.NoLevel {
+		return
+	}
+	l.logger.WithLevel(level).Msg(errorMsg)
+}
+
+// Used to match a DataDog log, which looks like "Datadog Tracer v1.55.0 ERROR: Uploading profile failed"
+var ddLogRegexp = regexp.MustCompile("^Datadog Tracer [0-9v.]+ (DEBUG|INFO|WARN|ERROR): (.*)")
+
+func parseDDLog(msg string) (zerolog.Level, string) {
+	matches := ddLogRegexp.FindStringSubmatch(msg)
+	if matches != nil {
+		switch matches[1] {
+		case "DEBUG":
+			return zerolog.DebugLevel, matches[2]
+		case "INFO":
+			return zerolog.InfoLevel, matches[2]
+		case "WARN":
+			return zerolog.WarnLevel, matches[2]
+		case "ERROR":
+			return zerolog.ErrorLevel, matches[2]
+		}
+	}
+
+	return zerolog.NoLevel, ""
 }
