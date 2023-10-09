@@ -88,7 +88,7 @@ BLACKFIRE_SOCKET="tcp://127.0.0.1:8307" blackfire agent --log-level=5
 2. Get the continuous profiler from the internal repository.
 
 ```
-go get github.com/blackfireio/go-continuous-profiling-experimental
+go get github.com/blackfireio/go-continuous-profiling
 ```
 
 3. Save the following code as `main.go` and run as following: 
@@ -106,7 +106,7 @@ import (
 	"io"
 	"time"
 
-	profiler "github.com/blackfireio/go-continuous-profiling-experimental"
+	profiler "github.com/blackfireio/go-continuous-profiling"
 )
 
 func doSomethingCpuIntensive() {
