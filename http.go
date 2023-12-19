@@ -41,14 +41,14 @@ func (t *bfTransport) RoundTrip(req *http.Request) (*http.Response, error) {
 	response, err := t.Transport.RoundTrip(req)
 	if err != nil {
 		if strings.Contains(err.Error(), "malformed HTTP version") {
-			log.Error().Err(errOldAgent).Send()
+			log.Error().Str("endpoint", req.URL.String()).Err(err).Msg("failed to send request")
 			return response, errOldAgent
 		}
 		return response, err
 	}
 
 	if response.StatusCode == 404 {
-		log.Error().Err(errOldAgent).Send()
+		log.Error().Str("endpoint", req.URL.String()).Msg("failed to send request - got 404 response")
 		return response, errOldAgent
 	}
 
