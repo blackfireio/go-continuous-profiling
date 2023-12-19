@@ -3,6 +3,7 @@ package profiler
 import (
 	"errors"
 	"fmt"
+	"os"
 	"regexp"
 	"strings"
 	"sync"
@@ -110,6 +111,9 @@ func Start(opts ...Option) error {
 	if httpClient == nil {
 		httpClient = NewHTTPClient(protocol, address, cfg.serverId, cfg.serverToken)
 	}
+
+	// Disable sending telemetry data
+	os.Setenv("DD_INSTRUMENTATION_TELEMETRY_ENABLED", "false")
 
 	ddOpts = append(ddOpts,
 		dd_profiler.WithHTTPClient(httpClient),
