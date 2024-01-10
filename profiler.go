@@ -115,6 +115,10 @@ func Start(opts ...Option) error {
 	// Disable sending telemetry data
 	os.Setenv("DD_INSTRUMENTATION_TELEMETRY_ENABLED", "false")
 
+	// Disable loggingrate - DD profiler only logs same error at some configurable
+	// rate by default
+	os.Setenv("DD_LOGGING_RATE", "0")
+
 	ddOpts = append(ddOpts,
 		dd_profiler.WithHTTPClient(httpClient),
 		dd_profiler.CPUProfileRate(cfg.cpuProfileRate),
