@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+1.0.1 (2024-01-16)
+
+ * Disable logging rate
+
 1.0.0 (2024-01-08)
 
  * First stable revision
