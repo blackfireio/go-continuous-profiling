@@ -1,4 +1,4 @@
-# Experimental Blackfire Continuous Profiler for Go
+# Blackfire Continuous Profiler for Go
 
 Blackfire Continuous Profiler continuously collects and uploads profiling data to the Blackfire servers.
 
@@ -54,14 +54,14 @@ The default is `CPUProfile`.
 
 `WithLabels`: Sets custom labels specific to the profile payload that is sent.
 
-`WithAgentSocket`: Sets the Blackfire Agent's socket. The default is platform dependent 
+`WithAgentSocket`: Sets the Blackfire Agent's socket. The default is platform dependent
 and uses the same default as the Blackfire Agent.
 
-`WithUploadTimeout`: Sets the upload timeout of the message that is sent to the Blackfire Agent. 
+`WithUploadTimeout`: Sets the upload timeout of the message that is sent to the Blackfire Agent.
 The default is 10 seconds. Can also be set via the environment variable `BLACKFIRE_CONPROF_UPLOAD_TIMEOUT`.
 
 Note:
-If the same parameter is set by both an environment variable and a `Start` call, the explicit 
+If the same parameter is set by both an environment variable and a `Start` call, the explicit
 parameter in the `Start` call takes precedence.
 
 There is also some additional configuration that can be done using environment variables:
@@ -76,7 +76,7 @@ Stops the continuous profiling probe.
 # A simple example application
 
 > **_NOTE:_**
-We don't need to specify `BLACKFIRE_SOCKET` in any of the steps below. If running on the same 
+We don't need to specify `BLACKFIRE_SOCKET` in any of the steps below. If running on the same
 machine both Agent and probe will point to the same address. This is just for example purposes.
 
 1. Run Blackfire Agent (version 2.13.0 and up)
@@ -91,7 +91,7 @@ BLACKFIRE_SOCKET="tcp://127.0.0.1:8307" blackfire agent --log-level=5
 go get github.com/blackfireio/go-continuous-profiling
 ```
 
-3. Save the following code as `main.go` and run as following: 
+3. Save the following code as `main.go` and run as following:
 
 ```
 BLACKFIRE_LOG_LEVEL=4 BLACKFIRE_AGENT_SOCKET="tcp://127.0.0.1:8307" go run main.go
@@ -137,5 +137,5 @@ func main() {
 }
 ```
 
-4. Profiler will send data to the Agent every 45 seconds by default, and Agent will forward it to the Blackfire 
+4. Profiler will send data to the Agent every 45 seconds by default, and Agent will forward it to the Blackfire
 backend. Data then can be visualized at https://blackfire.io.

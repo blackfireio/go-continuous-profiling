@@ -1,4 +1,4 @@
-module github.com/blackfireio/go-continuous-profiling-experimental
+module github.com/blackfireio/go-continuous-profiling
 
 go 1.18
 
