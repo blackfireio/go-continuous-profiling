@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+1.0.2 (2024-01-22)
+
+ * Drop experimental label
+
 1.0.1 (2024-01-16)
 
  * Disable logging rate
