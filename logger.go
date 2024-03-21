@@ -59,7 +59,7 @@ func newLoggerFromEnv() (zerolog.Logger, error) {
 		}
 	}
 
-	if v := os.Getenv("BLACKFIRE_LOG_FILE"); v != "" {
+	if v := os.Getenv("BLACKFIRE_LOG_FILE"); v != "" && v != "stderr" {
 		w, err := os.OpenFile(v, os.O_RDWR|os.O_CREATE, 0664)
 		if err != nil {
 			rerr = fmt.Errorf("could not open log file at %s: %v", v, err)
