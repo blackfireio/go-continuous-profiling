@@ -38,7 +38,7 @@ profiler.Start(
 		profiler.HeapProfile,
 		profiler.GoroutineProfile,
 	),
-	profiler.WithLabels({
+	profiler.WithLabels(map[string]string{
 		"key1": "value1",
 		"key2": "value2",
 	}),
