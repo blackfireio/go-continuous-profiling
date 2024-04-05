@@ -1,18 +1,22 @@
 CHANGELOG
 =========
 
-1.0.3 (2024-02-02)
+* v1.0.4 (2024-04-05)
 
- * Update documentation
+  - Do not add logfile handler if log_file is stderr
 
-1.0.2 (2024-01-22)
+* 1.0.3 (2024-02-02)
 
- * Drop experimental label
+  - Update documentation
 
-1.0.1 (2024-01-16)
+* 1.0.2 (2024-01-22)
 
- * Disable logging rate
+  - Drop experimental label
 
-1.0.0 (2024-01-08)
+* 1.0.1 (2024-01-16)
 
- * First stable revision
+  - Disable logging rate
+
+* 1.0.0 (2024-01-08)
+
+  - First stable revision
