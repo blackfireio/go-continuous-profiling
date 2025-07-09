@@ -3,10 +3,11 @@ package profiler
 import (
 	"errors"
 	"fmt"
-	"os"
 	"regexp"
 	"strings"
 	"sync"
+
+	_ "github.com/blackfireio/go-continuous-profiling/bootstrap"
 
 	dd_profiler "gopkg.in/DataDog/dd-trace-go.v1/profiler"
 )
@@ -111,13 +112,6 @@ func Start(opts ...Option) error {
 	if httpClient == nil {
 		httpClient = NewHTTPClient(protocol, address, cfg.serverId, cfg.serverToken)
 	}
-
-	// Disable sending telemetry data
-	os.Setenv("DD_INSTRUMENTATION_TELEMETRY_ENABLED", "false")
-
-	// Disable loggingrate - DD profiler only logs same error at some configurable
-	// rate by default
-	os.Setenv("DD_LOGGING_RATE", "0")
 
 	ddOpts = append(ddOpts,
 		dd_profiler.WithHTTPClient(httpClient),
