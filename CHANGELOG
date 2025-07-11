@@ -1,6 +1,11 @@
 CHANGELOG
 =========
 
+* v1.0.5 (2025-07-11)
+
+  - Update `dd-trace-go` (1.60.2)
+  - Disable sending telemetry at import time
+
 * v1.0.4 (2024-04-05)
 
   - Do not add logfile handler if log_file is stderr
