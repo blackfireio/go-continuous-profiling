@@ -5,6 +5,7 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"path/filepath"
 	"strings"
 	"testing"
 	"time"
@@ -31,6 +32,10 @@ func isLabel(p *multipart.Part) bool {
 
 func isDataDogEventPart(p *multipart.Part) bool {
 	return p.FormName() == "event" && p.FileName() == "event.json"
+}
+
+func isPProfFile(p *multipart.Part) bool {
+	return filepath.Ext(p.FileName()) == ".pprof" || p.FileName() == "cpu"
 }
 
 func parseConProfReq(t *testing.T, r *http.Request) (map[string]string, []*pprof_profile.Profile) {
@@ -75,7 +80,7 @@ func parseConProfReq(t *testing.T, r *http.Request) (map[string]string, []*pprof
 				}
 				labels[ta[0]] = ta[1]
 			}
-		} else {
+		} else if isPProfFile(part) {
 			pp, err := pprof_profile.ParseData(body)
 			if err != nil {
 				t.Fatal(err)
