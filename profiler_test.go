@@ -1,6 +1,7 @@
 package profiler
 
 import (
+	"bytes"
 	"encoding/json"
 	"io"
 	"net/http"
@@ -13,6 +14,7 @@ import (
 	"mime/multipart"
 
 	pprof_profile "github.com/google/pprof/profile"
+	"github.com/klauspost/compress/zstd"
 	assert "github.com/stretchr/testify/require"
 )
 
@@ -81,6 +83,18 @@ func parseConProfReq(t *testing.T, r *http.Request) (map[string]string, []*pprof
 				labels[ta[0]] = ta[1]
 			}
 		} else if isPProfFile(part) {
+			// v2 sends zstd-compressed pprof data
+			if len(body) >= 4 && body[0] == 0x28 && body[1] == 0xb5 && body[2] == 0x2f && body[3] == 0xfd {
+				dec, err := zstd.NewReader(bytes.NewReader(body))
+				if err != nil {
+					t.Fatal(err)
+				}
+				body, err = io.ReadAll(dec)
+				dec.Close()
+				if err != nil {
+					t.Fatal(err)
+				}
+			}
 			pp, err := pprof_profile.ParseData(body)
 			if err != nil {
 				t.Fatal(err)
@@ -128,6 +142,36 @@ func TestStartStop(t *testing.T) {
 		case <-done:
 		}
 	})
+
+	for _, protocol := range []string{"http", "https"} {
+		t.Run("agent_addr_"+protocol, func(t *testing.T) {
+			done := make(chan bool, 10)
+			m := &mockTransport{}
+			h := &http.Client{Transport: m}
+			m.DoRoundTripFunc = func(req *http.Request) (*http.Response, error) {
+				assert.Equal(t, "/profiling/v1/input", req.URL.Path)
+				assert.Equal(t, "localhost:8307", req.URL.Host)
+
+				_, profiles := parseConProfReq(t, req)
+				assert.Equal(t, profiles[0].SampleType[1].Type, "cpu")
+
+				done <- true
+				return &http.Response{StatusCode: 200, Body: nil}, nil
+			}
+
+			Start(period(100*time.Millisecond),
+				WithCPUDuration(100*time.Millisecond),
+				withHTTPClient(h),
+				WithAgentSocket(protocol+"://localhost:8307"))
+			defer Stop()
+
+			select {
+			case <-time.After(time.Duration(1 * time.Second)):
+				t.Fatal("test timeouted")
+			case <-done:
+			}
+		})
+	}
 
 	t.Run("config", func(t *testing.T) {
 		os.Setenv("BLACKFIRE_CONPROF_PERIOD", "11")

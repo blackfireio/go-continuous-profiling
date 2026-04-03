@@ -9,17 +9,13 @@ import (
 
 	_ "github.com/blackfireio/go-continuous-profiling/bootstrap"
 
-	dd_profiler "gopkg.in/DataDog/dd-trace-go.v1/profiler"
+	dd_profiler "github.com/DataDog/dd-trace-go/v2/profiler"
 )
 
 var (
 	mu           sync.Mutex
 	activeConfig *config // used for testing
 	errOldAgent  = errors.New("continuous profiling feature requires Blackfire Agent >= 2.13.0")
-)
-
-const (
-	agentConProfUri = "/profiling/v1/input"
 )
 
 func parseNetworkAddressString(agentSocket string) (network string, address string, err error) {
@@ -62,24 +58,16 @@ func Start(opts ...Option) error {
 	}
 
 	var ddOpts []dd_profiler.Option
-	if protocol == "http" || protocol == "https" {
-		ddOpts = []dd_profiler.Option{
-			dd_profiler.WithURL(strings.TrimSuffix(cfg.agentSocket, "/") + agentConProfUri),
-			// Unfortunately, it triggers a warning: "WARN: profiler.WithAgentlessUpload is currently for internal usage only and not officially supported."
-			dd_profiler.WithAgentlessUpload(),
-			// An API key is required by the agent less mode, but we don't use it
-			dd_profiler.WithAPIKey("00000000000000000000000000000000"),
-		}
-	} else if protocol == "tcp" {
+	switch protocol {
+	case "http", "https", "tcp":
 		ddOpts = []dd_profiler.Option{
 			dd_profiler.WithAgentAddr(strings.TrimSuffix(address, "/")),
 		}
-	} else if protocol == "unix" {
+	case "unix":
 		ddOpts = []dd_profiler.Option{
-			// Connection to the unix socket is handled by our custom HTTP client
 			dd_profiler.WithAgentAddr("localhost"),
 		}
-	} else {
+	default:
 		return fmt.Errorf("invalid agent socket protocol: %v [%v]", protocol, cfg.agentSocket)
 	}
 

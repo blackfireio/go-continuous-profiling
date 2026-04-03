@@ -14,7 +14,7 @@ update-deps:
 
 .PHONY: mod-tidy
 mod-tidy:
-	go mod tidy -compat=1.22
+	go mod tidy
 
 .PHONY: format
 format:

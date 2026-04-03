@@ -10,7 +10,7 @@ import (
 	"time"
 
 	"github.com/rs/zerolog"
-	dd_trace "gopkg.in/DataDog/dd-trace-go.v1/ddtrace"
+	dd_trace "github.com/DataDog/dd-trace-go/v2/ddtrace/tracer"
 )
 
 const (
